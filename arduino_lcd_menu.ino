@@ -25,51 +25,19 @@ int min=0;
 int year=2020;
 int month=0;
 int day=0;
-
-//int prev_menu_id = 0;
-//// MENU DATA STRUCTURE
-//struct menu
-//  {
-//      int id;
-//      int parent_id;
-//      String menu;
-//  };
-//
-//menu main_menu[] = {
-//    {0,1,"Nodes"},
-//    {1,1,"Set time"},
-//    {2,1,"Exit"},
-//};
-//
-//
-//menu node_menu[] = {
-//    // NODES MENU
-//    {0,2,"Node 1"},
-//    {1,2,"Node 2"},
-//    {2,2,"Exit"},
-//};
-//
-//menu node1_menu[] = {
-//    // NODES MENU
-//    {0,3,"Node 1"},
-//    {1,3,"Set interval"},
-//    {2,3,"Set period"},
-//    {3,3,"Exit"},
-//};
-//
-//menu node2_menu[] = {
-//    // NODES MENU
-//    {0,4,"Node 2"},
-//    {1,4,"Set interval"},
-//    {2,4,"Set period"},
-//    {3,4,"Exit"},
-//};
     
 
 String menuItems[3] = {"Nodes", "Date", "Exit M"};
 String nodeItems[3] = {"Node 1", "Node 2", "Exit N"};
 String dateItems[6] = {"Hour", "Min", "Day", "Month", "Year", "Exit D"};
 int dateVals[6] = {0,0,1,1,20};
+String days[8] = {"Mon","Tues","Wed","Thu","Fri","Sat","San", "Exit"};
+int node1_on_day[7] = {0,0,0,0,0,0,0};
+int node2_on_day[7] = {0,0,0,0,0,0,0};
+int node1_start_hour = 0;
+int node2_start_hour = 0;
+
+String node_sub_menu[4]={"Set Day", "Set hour", "Set interval", "Exit subnode"};
 
 
 void home_screen(){
@@ -80,63 +48,6 @@ void home_screen(){
   lcd.print("        08/28/21");
  }
 
-
-//void main_menu(){
-//  int activeButton = 0;
-//  lcd.clear();
-//  lcd.setCursor(0, 0);
-//  lcd.print("MAIN MENU");
-//
-//  while (activeButton == 0) {
-//    int button;
-//    readKey = analogRead(0);
-//    if (readKey < 800) {
-//      delay(100);
-//      readKey = analogRead(0);
-//    }
-//    button = evaluateButton(readKey);
-//    switch (button) {
-//      case 4:  // This case will execute if the "back" button is pressed
-//        button = 0;
-//        activeButton = 1;
-//        digitalWrite(13,LOW);
-//        break;
-//    }
-//  }
-//}
-
-//
-//void print_menu(int menu_id, int index){
-//    lcd.clear();
-//    // MAIN MENU
-//    if(menu_id == 1){
-//      if(index>2){
-//        index=2;
-//        menu_index = 2;
-//      }
-//      lcd.setCursor(0,0);
-//      lcd.print("MAIN MENU");
-//      lcd.setCursor(0,1);
-//      lcd.print(">               ");
-//      lcd.setCursor(2,1);
-//      lcd.print(main_menu[index].menu);
-//      delay(100);
-//    }
-//
-//    if(menu_id == 2){
-//      if(index>2){
-//        index=2;
-//        menu_index = 2;
-//      }
-//      lcd.setCursor(0,0);
-//      lcd.print("MAIN MENU");
-//      lcd.setCursor(0,1);
-//      lcd.print(">               ");
-//      lcd.setCursor(2,1);
-//      lcd.print(main_menu[index].menu);
-//      delay(100);
-//    }
-//}
 
 int evaluateButton(int x) {
   int result = 0;
@@ -156,7 +67,7 @@ int evaluateButton(int x) {
 }
 
 
-void main_menu() { // Function executes when you select the Green item from main menu
+void main_menu() { 
   int activeButton = 0;
   int menu_index = 0;
 
@@ -221,8 +132,7 @@ void main_menu() { // Function executes when you select the Green item from main
           }
           break;
         }
-  
-        
+ 
       }
   }
   
@@ -281,10 +191,10 @@ void node_menu() { // Function executes when you select the Green item from main
           activeButton = 1;
           switch(menu_index){
             case 0:
-              node_menu();
+              node1_conf_menu();
               break;
             case 1:
-              //date_menu();
+              node2_conf_menu();
               break;
             case 2:
               main_menu();
@@ -373,12 +283,232 @@ void date_menu() { // Function executes when you select the Green item from main
           main_menu();
           break;
       }
+    }
   }
+}
+
+void node1_conf_menu(){
+  //{"Set Day", "Set hour", "Set interval", "Exit subnode"};
+  int activeButton = 0;
+  int menu_index = 0;
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Node_1 conf");
+  lcd.setCursor(0, 1);
+  lcd.print(">");
+  lcd.setCursor(2, 1);
+  lcd.print(node_sub_menu[menu_index]);
+ 
+  while (activeButton == 0) {
+    delay(100);
+    int button;
+    int readKey = analogRead(0);
+    Serial.println(readKey);
+    if (readKey < 800) {
+      delay(100);
+      readKey = analogRead(0);
+
+      button = evaluateButton(readKey);
+      switch (button) {
+        case 1:
+          Serial.println("Right");
+          break;
+        case 2:
+          Serial.println("UP");
+          menu_index-=1;
+          lcd.setCursor(0, 1);
+          lcd.print(">                ");
+          lcd.setCursor(2, 1);
+          lcd.print(node_sub_menu[menu_index]);
+          break;
+        case 3:
+          Serial.println("DOWN");
+          menu_index+=1;
+          lcd.setCursor(0, 1);
+          lcd.print(">                ");
+          lcd.setCursor(2, 1);
+          lcd.print(node_sub_menu[menu_index]);
+          break;
+        case 4:
+          Serial.println("LEFT");
+          break;
+        case 5:  
+          Serial.println("SELECT");
+          button = 0;
+          activeButton = 1;
+          switch(menu_index){
+            case 0:
+              // SET NODE 1 DAY MENU
+              node1_set_day();
+              break;
+            case 1:
+              // SET RUN HOUR MENU
+              break;
+            case 2:
+              // SET INTERVAL MENU
+              break;
+            case 3:
+              node_menu();
+              break;
+          }
+          break;
+      }
+    }
   }
-  
 }
 
 
+void node2_conf_menu(){
+  //{"Set Day", "Set hour", "Set interval", "Exit subnode"};
+  int activeButton = 0;
+  int menu_index = 0;
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Node_2 conf");
+  lcd.setCursor(0, 1);
+  lcd.print(">");
+  lcd.setCursor(2, 1);
+  lcd.print(node_sub_menu[menu_index]);
+ 
+  while (activeButton == 0) {
+    delay(100);
+    int button;
+    int readKey = analogRead(0);
+    Serial.println(readKey);
+    if (readKey < 800) {
+      delay(100);
+      readKey = analogRead(0);
+
+      button = evaluateButton(readKey);
+      switch (button) {
+        case 1:
+          Serial.println("Right");
+          break;
+        case 2:
+          Serial.println("UP");
+          menu_index-=1;
+          lcd.setCursor(0, 1);
+          lcd.print(">                ");
+          lcd.setCursor(2, 1);
+          lcd.print(node_sub_menu[menu_index]);
+          break;
+        case 3:
+          Serial.println("DOWN");
+          menu_index+=1;
+          lcd.setCursor(0, 1);
+          lcd.print(">                ");
+          lcd.setCursor(2, 1);
+          lcd.print(node_sub_menu[menu_index]);
+          break;
+        case 4:
+          Serial.println("LEFT");
+          break;
+        case 5:  
+          Serial.println("SELECT");
+          button = 0;
+          activeButton = 1;
+          switch(menu_index){
+            case 0:
+              // SET DAY MENU
+              break;
+            case 1:
+              // SET RUN HOUR MENU
+              break;
+            case 2:
+              // SET INTERVAL MENU
+              break;
+            case 3:
+              node_menu();
+              break;
+          }
+          break;
+      }
+    }
+  }
+}
+
+void node1_set_day(){
+  int activeButton = 0;
+  int menu_index = 0;
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Day Settings");
+  lcd.setCursor(0, 1);
+  lcd.print(">");
+  lcd.setCursor(2, 1);
+  lcd.print(days[menu_index]);
+  lcd.setCursor(14, 1);
+  lcd.print(node1_on_day[menu_index]);
+
+  while (activeButton == 0) {
+    delay(100);
+    int button;
+    int readKey = analogRead(0);
+    Serial.println(readKey);
+    if (readKey < 800) {
+      delay(100);
+      readKey = analogRead(0);
+
+      button = evaluateButton(readKey);
+      switch (button) {
+        case 1:
+          Serial.println("Right");
+          node1_on_day[menu_index]+=1;
+          
+          lcd.setCursor(0, 1);
+          lcd.print(">                ");
+          lcd.setCursor(2, 1);
+          lcd.print(days[menu_index]);
+          lcd.setCursor(14, 1);
+          lcd.print(node1_on_day[menu_index]);
+          break;
+        case 2:
+          Serial.println("UP");
+          menu_index-=1;
+          lcd.setCursor(0, 1);
+          lcd.print(">                ");
+          lcd.setCursor(2, 1);
+          lcd.print(days[menu_index]);
+          lcd.setCursor(14, 1);
+          lcd.print(node1_on_day[menu_index]);
+          break;
+        case 3:
+          Serial.println("DOWN");
+          menu_index+=1;
+          lcd.setCursor(0, 1);
+          lcd.print(">                ");
+          lcd.setCursor(2, 1);
+          lcd.print(days[menu_index]);
+          lcd.setCursor(14, 1);
+          lcd.print(node1_on_day[menu_index]);
+          break;
+        case 4:
+          Serial.println("LEFT");
+          node1_on_day[menu_index]-=1;
+          lcd.setCursor(0, 1);
+          lcd.print(">                ");
+          lcd.setCursor(2, 1);
+          lcd.print(days[menu_index]);
+          lcd.setCursor(14, 1);
+          lcd.print(node1_on_day[menu_index]);
+          break;
+        case 5:  
+          Serial.println("SELECT");
+          button = 0;
+          activeButton = 1;
+          switch(menu_index){
+            case 7:
+              node1_conf_menu();
+              break;
+          }    
+          break;
+      }
+    }
+  }
+}
 
 
 
